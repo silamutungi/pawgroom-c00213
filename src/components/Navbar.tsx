@@ -34,16 +34,6 @@ export default function Navbar() {
     setOpen(false)
   }, [location.pathname])
 
-  // Prevent body scroll when drawer is open
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
-    return () => { document.body.style.overflow = '' }
-  }, [open])
-
   const handleSignOut = async () => {
     if (isSupabaseConfigured) await supabase.auth.signOut()
     navigate('/')
@@ -100,7 +90,7 @@ export default function Navbar() {
               aria-expanded={open}
               aria-controls="mobile-drawer"
             >
-              {/* Hamburger / close icon */}
+              {/* Three horizontal lines hamburger icon */}
               {open ? (
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                   <line x1="4" y1="4" x2="16" y2="16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -119,117 +109,116 @@ export default function Navbar() {
       </header>
 
       {/* Mobile drawer overlay + slide-in panel — only rendered below md */}
-      <div
-        className={`md:hidden fixed inset-0 z-40 transition-opacity duration-300 ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-        aria-hidden={!open}
-      >
-        {/* Semi-transparent backdrop — clicking this closes the drawer */}
-        <div
-          className="absolute inset-0"
-          style={{ backgroundColor: 'rgba(31,29,26,0.40)' }}
-          onClick={() => setOpen(false)}
-        />
+      {open && (
+        <div className="md:hidden fixed inset-0 z-40" aria-hidden="true">
+          {/* Semi-transparent backdrop — clicking this closes the drawer */}
+          <div
+            className="absolute inset-0"
+            style={{ backgroundColor: 'rgba(31,29,26,0.40)' }}
+            onClick={() => setOpen(false)}
+          />
 
-        {/* Slide-in drawer panel */}
-        <div
-          id="mobile-drawer"
-          ref={drawerRef}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Mobile navigation"
-          className={`absolute top-0 right-0 h-full w-72 flex flex-col shadow-2xl transform transition-transform duration-300 ease-in-out ${open ? 'translate-x-0' : 'translate-x-full'}`}
-          style={{ backgroundColor: 'var(--color-bg-surface)' }}
-        >
-          {/* Drawer header */}
-          <div className="flex items-center justify-between px-6 h-16 border-b" style={{ borderColor: 'var(--color-border)' }}>
-            <span className="font-semibold text-sm" style={{ color: 'var(--color-text-secondary)' }}>Menu</span>
-            <button
-              onClick={() => setOpen(false)}
-              className="w-9 h-9 flex items-center justify-center rounded-lg transition-colors"
-              style={{ color: 'var(--color-text)' }}
-              aria-label="Close menu"
-            >
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-                <line x1="3" y1="3" x2="15" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                <line x1="15" y1="3" x2="3" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Nav links — Ink color for inactive, Flame (primary) for active */}
-          <nav className="flex flex-col px-4 py-4 gap-1" aria-label="Mobile navigation links">
-            {links.map(l => (
-              <Link
-                key={l.to}
-                to={l.to}
+          {/* Slide-in drawer panel */}
+          <div
+            id="mobile-drawer"
+            ref={drawerRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation"
+            className="absolute top-0 right-0 h-full w-72 flex flex-col shadow-2xl"
+            style={{ backgroundColor: 'var(--color-bg-surface)' }}
+          >
+            {/* Drawer header */}
+            <div className="flex items-center justify-between px-6 h-16 border-b" style={{ borderColor: 'var(--color-border)' }}>
+              <span className="font-semibold text-sm" style={{ color: 'var(--color-text-secondary)' }}>Menu</span>
+              <button
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors"
-                style={{
-                  color: isActive(l.to) ? 'var(--color-primary)' : 'var(--color-text)',
-                  backgroundColor: isActive(l.to) ? 'rgba(216,90,31,0.08)' : 'transparent',
-                }}
+                className="w-9 h-9 flex items-center justify-center rounded-lg transition-colors"
+                style={{ color: 'var(--color-text)' }}
+                aria-label="Close menu"
               >
-                {isActive(l.to) && (
-                  <span
-                    className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: 'var(--color-primary)' }}
-                    aria-hidden="true"
-                  />
-                )}
-                {l.label}
-              </Link>
-            ))}
-          </nav>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                  <line x1="3" y1="3" x2="15" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="15" y1="3" x2="3" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
 
-          {/* Divider */}
-          <div className="mx-4 border-t" style={{ borderColor: 'var(--color-border)' }} />
-
-          {/* Auth section */}
-          <div className="flex flex-col px-4 py-4 gap-2">
-            {user ? (
-              <>
+            {/* Nav links */}
+            <nav className="flex flex-col px-4 py-4 gap-1" aria-label="Mobile navigation links">
+              {links.map(l => (
                 <Link
-                  to="/dashboard"
+                  key={l.to}
+                  to={l.to}
                   onClick={() => setOpen(false)}
-                  className="flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors"
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors"
                   style={{
-                    color: isActive('/dashboard') ? 'var(--color-primary)' : 'var(--color-text)',
-                    backgroundColor: isActive('/dashboard') ? 'rgba(216,90,31,0.08)' : 'transparent',
+                    color: isActive(l.to) ? 'var(--color-primary)' : 'var(--color-text)',
+                    backgroundColor: isActive(l.to) ? 'rgba(216,90,31,0.08)' : 'transparent',
                   }}
                 >
-                  My bookings
+                  {isActive(l.to) && (
+                    <span
+                      className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: 'var(--color-primary)' }}
+                      aria-hidden="true"
+                    />
+                  )}
+                  {l.label}
                 </Link>
-                <button
-                  onClick={() => { handleSignOut(); setOpen(false) }}
-                  className="w-full text-left px-4 py-3 rounded-lg text-sm font-medium border transition-colors hover:opacity-80"
-                  style={{ borderColor: 'var(--color-border)', color: 'var(--color-text)' }}
-                >
-                  Sign out
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors"
-                  style={{ color: 'var(--color-text)' }}
-                >
-                  Sign in
-                </Link>
-                <Link
-                  to="/signup"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center justify-center px-4 py-3 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
-                  style={{ backgroundColor: 'var(--color-primary)', color: '#fff' }}
-                >
-                  Get started
-                </Link>
-              </>
-            )}
+              ))}
+            </nav>
+
+            {/* Divider */}
+            <div className="mx-4 border-t" style={{ borderColor: 'var(--color-border)' }} />
+
+            {/* Auth section */}
+            <div className="flex flex-col px-4 py-4 gap-2">
+              {user ? (
+                <>
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors"
+                    style={{
+                      color: isActive('/dashboard') ? 'var(--color-primary)' : 'var(--color-text)',
+                      backgroundColor: isActive('/dashboard') ? 'rgba(216,90,31,0.08)' : 'transparent',
+                    }}
+                  >
+                    My bookings
+                  </Link>
+                  <button
+                    onClick={() => { handleSignOut(); setOpen(false) }}
+                    className="w-full text-left px-4 py-3 rounded-lg text-sm font-medium border transition-colors hover:opacity-80"
+                    style={{ borderColor: 'var(--color-border)', color: 'var(--color-text)' }}
+                  >
+                    Sign out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors"
+                    style={{ color: 'var(--color-text)' }}
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    to="/signup"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center justify-center px-4 py-3 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
+                    style={{ backgroundColor: 'var(--color-primary)', color: '#fff' }}
+                  >
+                    Get started
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </>
   )
 }
