@@ -52,7 +52,7 @@ export default function Navbar() {
       <header className="sticky top-0 z-50 border-b" style={{ backgroundColor: 'var(--color-bg)', borderColor: 'var(--color-border)' }}>
         <div className="max-w-5xl mx-auto px-6">
           <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center gap-2 font-bold" style={{ color: 'var(--color-text)', fontSize: 'var(--text-headline)' }} aria-label="PawGroom home">
+            <Link to="/" className="flex items-center gap-2 font-bold" style={{ color: 'var(--color-text)', fontSize: 'var(--text-headline)', textDecoration: 'none' }} aria-label="PawGroom home">
               <Scissors size={20} style={{ color: 'var(--color-primary)' }} aria-hidden />
               PawGroom
             </Link>
